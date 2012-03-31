@@ -1,0 +1,42 @@
+*piecrust.txt*  PieCrust wrapper for VIM
+
+
+                VIM-PIECRUST REFERENCE MANUAL
+                    by Ludovic Chabant
+
+
+                                                *piecrust*
+
+1.  Introduction            |piecrust-intro|
+2.  Commands                |piecrust-commands|
+
+
+=============================================================================
+1.  Introduction                                *piecrust-intro*
+
+PieCrust is a static website generator and lightweight CMS. You can learn more
+about it on the official website:
+
+http://bolt80.com/piecrust
+
+When a file from a PieCrust website is open in a buffer, that buffer gets new
+commands defined.
+
+Grab the latest version or report a bug on BitBucket:
+
+http://bitbucket.org/ludovicchabant/vim-piecrust
+
+
+=============================================================================
+2.  Introduction                                *piecrust-commands*
+
+All commands defined by |piecrust| are local to each buffer.
+
+                                                *Pcedit*
+:Pcedit {args}          Opens a page, post or template file from the current
+                        website given a website relative path.
+                        The given {args} can be a part of the wanted file's
+                        name, a glob pattern, or a regex pattern. In that case,
+                        the auto-completion will provide the appropriate
+                        matching files.
+
