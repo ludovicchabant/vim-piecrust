@@ -224,6 +224,59 @@ call s:AddMainCommand("-bang -nargs=? -complete=customlist,s:FindWebsiteFiles Pc
 
 " }}}
 
+" Pcposturl {{{
+
+function! s:PcPostUrl(path) abort
+    " Get information about the given path.
+    let l:website = s:piecrust_website()
+    let l:fullPath = l:website.GetFullPath('_content/posts/' . a:path)
+    let l:output = l:website.RunCommand('find', '--exact', '--components', l:fullPath)
+    call s:trace(l:output)
+    
+    " Get each bit of info from the command output.
+    let l:lines = split(l:output, '\n')
+    let l:components = {}
+    for line in l:lines
+        let l:kv = split(line, ': ')
+        if len(l:kv) != 2
+            continue
+        endif
+        let l:components[l:kv[0]] = l:kv[1]
+    endfor
+
+    " Check for errors
+    if !has_key(l:components, 'year') ||
+                \!has_key(l:components, 'month') ||
+                \!has_key(l:components, 'day') ||
+                \!has_key(l:components, 'slug')
+        call s:error(join(l:lines, '\n'))
+        return
+    endif
+
+    " Print the `pcposturl` command.
+    let l:posturl  = "{{ pcposturl("
+    let l:posturl .= l:components['year'] . ", "
+    let l:posturl .= l:components['month'] . ", "
+    let l:posturl .= l:components['day'] . ", "
+    let l:posturl .= "'" . l:components['slug'] . "'"
+    let l:posturl .= ") }}"
+    call setreg(v:register, l:posturl)
+    execute 'normal "' . v:register . 'p'
+endfunction
+
+function! s:FindWebsitePosts(ArgLead, CmdLine, CursorPos) abort
+    let l:website = s:piecrust_website()
+    let l:output = l:website.RunCommand('find', '--posts', a:ArgLead)
+    let l:matches = split(l:output, '\n')
+    let l:length = strlen('_content/posts/')
+    call map(l:matches, 'strpart(v:val, ' . l:length . ')')
+    return l:matches
+endfunction
+
+call s:AddMainCommand("-nargs=? -complete=customlist,s:FindWebsitePosts Pcposturl :call s:PcPostUrl(<f-args>)")
+
+" }}}
+
 " Autoload Functions {{{
 
 " Rescans the current buffer for setting up PieCrust commands.
